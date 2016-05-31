@@ -1102,8 +1102,6 @@ function KurentoRoom(wsUri, callback) {
 };
 
 ));*/
-
-
 // Room --------------------------------
 
 function jq( myid ) {
@@ -1305,6 +1303,20 @@ function Room(kurento, options) {
 
 	this.onNewMessage = function (msg) {
 		console.log("New message: " + JSON.stringify(msg));
+
+		if(msg.hasOwnProperty('room') && msg.hasOwnProperty('user') && msg.hasOwnProperty('message')) {
+			this.onNewSimpleMessage(msg);
+		} else {
+			this.onNewCustomMessage(msg);
+		}
+
+	}
+
+	this.onNewCustomMessage = function(msg) {
+		ee.emitEvent('newCustomMessage', [msg]);
+	}
+
+	this.onNewSimpleMessage = function(msg) {
 		var room = msg.room;
 		var user = msg.user;
 		var message = msg.message;
@@ -1313,7 +1325,7 @@ function Room(kurento, options) {
 			ee.emitEvent('newMessage', [{
 				room: room,
 				user: user,
-				message: message
+				content: message
 			}]);
 		} else {
 			console.error("User undefined in new message:", msg);

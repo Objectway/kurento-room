@@ -618,8 +618,66 @@ function Stream(kurento, local, room, options) {
 		options.data = opts.data;
 		options.video = opts.video;
 		options.audio = opts.audio;
+		option.screen = opts.screen;
 	};
+	this.getOptions=function(){
+		return options;
+	};
+	//
+	// Custom function to make the frontend able to get screensharing stream.
+	//
+	this.initScreen = function () {
+		participant.addStream(that);
+
+		if (sessionStorage.getScreenMediaJSExtensionId) {
+			chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId, { type: 'getScreen', id: 1 }, null, function (data) {
+				if (!data || data.sourceId === '') {
+					// user canceled
+					console.error("Access denied");
+					ee.emitEvent('access-denied', null);
+					//var error = new Error('NavigatorUserMediaError');
+					//error.name = 'PERMISSION_DENIED';
+					//callback(error);
+				} else {
+					// User accepted
+					var constraints = {
+						audio: false,
+						video: {
+							mandatory: {
+								chromeMediaSource: 'desktop',
+								maxWidth: window.screen.width,
+								maxHeight: window.screen.height,
+								maxFrameRate: 60
+							},
+							optional: [
+								{googLeakyBucket: true},
+								{googTemporalLayeredScreencast: true}
+							]
+						}
+					};
+
+					constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
+
+					getUserMedia(constraints, function (userStream) {
+						wrStream = userStream;
+						ee.emitEvent('access-accepted', null);
+					}, function (error) {
+						console.error("Access denied", error);
+						ee.emitEvent('access-denied', null);
+					});
+				}
+			});
+		}
+	}
+
 	this.init = function () {
+
+		// Check if the user wants to share the screen
+		if(options.screen === true) {
+			this.initScreen();
+			return;
+		}
+
 		participant.addStream(that);
 
 		/* background page, responsible for actually choosing media */
@@ -706,9 +764,10 @@ function Stream(kurento, local, room, options) {
 		if (local) {
 			var options = {
 				videoStream: wrStream,
+				audioStreams: wrStream,
 				onicecandidate: participant.sendIceCandidate.bind(participant)
 			}
-			if (that.displayMyRemote()) {
+			if (true) { // that.displayMyRemote()) {
 				wp = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
 					if(error) {
 						return console.error(error);

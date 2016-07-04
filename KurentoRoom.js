@@ -618,7 +618,7 @@ function Stream(kurento, local, room, options) {
 		options.data = opts.data;
 		options.video = opts.video;
 		options.audio = opts.audio;
-		option.screen = opts.screen;
+		options.screen = opts.screen;
 	};
 	this.getOptions=function(){
 		return options;

@@ -412,6 +412,7 @@ function Participant(kurento, local, room, options) {
 				participant: that,
 				recvVideo: (options.streams[i].recvVideo == undefined ? true : options.streams[i].recvVideo),
 				recvAudio: (options.streams[i].recvAudio == undefined ? true : options.streams[i].recvAudio),
+        mediaType: options.streams[i].mediaType,
 				channel: 'data'
 			}
 			var stream = new Stream(kurento, false, room, streamOpts);
@@ -619,6 +620,7 @@ function Stream(kurento, local, room, options) {
 		options.video = opts.video;
 		options.audio = opts.audio;
 		options.screen = opts.screen;
+    options.mediaType = opts.mediaType;
 	};
 	this.getOptions=function(){
 		return options;
@@ -716,7 +718,6 @@ function Stream(kurento, local, room, options) {
 				ee.emitEvent('access-denied', null);
 			});
 		}
-
 	}
 
 	this.publishVideoCallback = function (error, sdpOfferParam, wp) {
@@ -728,8 +729,9 @@ function Stream(kurento, local, room, options) {
 			+ that.getGlobalID(), sdpOfferParam);
 		kurento.sendRequest("publishVideo", {
 			sdpOffer: sdpOfferParam,
-			doLoopback: that.displayMyRemote() || false
-		}, function (error, response) {
+			doLoopback: that.displayMyRemote() || false,
+      mediaType: that.getOptions().mediaType
+    }, function (error, response) {
 			if (error) {
 				console.error("Error on publishVideo: " + JSON.stringify(error));
 			} else {
@@ -809,7 +811,6 @@ function Stream(kurento, local, room, options) {
 	this.publish = function () {
 
 		// FIXME: Throw error when stream is not local
-
 		initWebRtcPeer(that.publishVideoCallback);
 
 		// FIXME: Now we have coupled connecting to a room and adding a

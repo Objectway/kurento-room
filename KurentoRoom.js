@@ -580,6 +580,47 @@ function Stream(kurento, local, room, options) {
 		}
 	}
 
+  this.playOnlyAudio = function (parentElement, thumbnailId) {
+    video = document.createElement('audio');
+
+    video.id = 'native-audio-' + that.getGlobalID();
+    video.autoplay = true;
+    video.controls = false;
+    if (wrStream) {
+      video.src = URL.createObjectURL(wrStream);
+      $(jq(thumbnailId)).show();
+      hideSpinner();
+    } else
+      console.log("No wrStream yet for", that.getGlobalID());
+
+    videoElements.push({
+      thumb: thumbnailId,
+      video: video
+    });
+
+    if (local) {
+      video.muted = true;
+    }
+
+    if (typeof parentElement === "string") {
+      document.getElementById(parentElement).appendChild(video);
+    } else {
+      parentElement.appendChild(video);
+    }
+  }
+
+  this.playAudio = function(thumbnailId){
+    var container = document.createElement('div');
+    container.className = "participant";
+    container.id = that.getGlobalID();
+    document.getElementById(thumbnailId).appendChild(container);
+
+    elements.push(container);
+
+    showSpinner(thumbnailId);
+    that.playOnlyAudio(container, thumbnailId);
+  }
+
 	this.playThumbnail = function (thumbnailId) {
 
 		var container = document.createElement('div');

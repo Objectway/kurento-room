@@ -63,7 +63,8 @@ function Room(kurento, options) {
 
 				var roomEvent = {
 					participants: [],
-					streams: []
+					streams: [],
+          statuses: { }
 				}
 
 				var length = exParticipants.length;
@@ -72,8 +73,9 @@ function Room(kurento, options) {
 					var participant = new Participant(kurento, false, that,
 						exParticipants[i]);
 
+          // Memorize the user statuses received from the back-end
+          roomEvent.statuses[participant.getID()] = exParticipants[i].status;
 					participants[participant.getID()] = participant;
-
 					roomEvent.participants.push(participant);
 
 					var streams = participant.getStreams();

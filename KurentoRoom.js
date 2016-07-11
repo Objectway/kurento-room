@@ -668,51 +668,114 @@ function Stream(kurento, local, room, options) {
 	this.getOptions=function(){
 		return options;
 	};
+
 	//
 	// Custom function to make the frontend able to get screensharing stream.
 	//
 	this.initScreen = function () {
 		participant.addStream(that);
 
-		if (sessionStorage.getScreenMediaJSExtensionId) {
-			chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId, { type: 'getScreen', id: 1 }, null, function (data) {
-				if (!data || data.sourceId === '') {
-					// user canceled
-					console.error("Access denied");
-					ee.emitEvent('access-denied', null);
-					//var error = new Error('NavigatorUserMediaError');
-					//error.name = 'PERMISSION_DENIED';
-					//callback(error);
-				} else {
-					// User accepted
-					var constraints = {
-						audio: false,
-						video: {
-							mandatory: {
-								chromeMediaSource: 'desktop',
-								maxWidth: window.screen.width,
-								maxHeight: window.screen.height,
-								maxFrameRate: 60
-							},
-							optional: [
-								{googLeakyBucket: true},
-								{googTemporalLayeredScreencast: true}
-							]
-						}
-					};
+		// Detect the browser
+		var isChrome = window.navigator.userAgent.match('Chrome') !== null;
+		var isFirefox = window.navigator.userAgent.match('Firefox') !== null;
 
-					constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
-
-					getUserMedia(constraints, function (userStream) {
-						wrStream = userStream;
-						ee.emitEvent('access-accepted', null);
-					}, function (error) {
-						console.error("Access denied", error);
-						ee.emitEvent('access-denied', null);
-					});
-				}
-			});
+		// Init
+		if (isChrome === true) {
+			this.initScreenChrome();
+		} else if (isFirefox === true) {
+			this.initScreenFirefox();
+		} else {
+			var error = "Unknown browser";
+			console.error("Access denied", error);
+			ee.emitEvent('access-denied', null);
 		}
+	}
+
+	this.initScreenChrome = function() {
+		if (sessionStorage.getScreenMediaJSExtensionId === undefined) {
+			var error = "No extension found";
+			console.error("Access denied", error);
+			ee.emitEvent('access-denied', null);
+			return;
+		}
+
+		var params = {
+			type: 'getScreen',
+			id: 1
+		};
+		chrome.runtime.sendMessage(sessionStorage.getScreenMediaJSExtensionId, params, null, function (data) {
+			if (!data || data.sourceId === '') {
+				// user canceled
+				console.error("Access denied");
+				ee.emitEvent('access-denied', null);
+			} else {
+				// User accepted
+				var constraints = {
+					audio: false,
+					video: {
+						mandatory: {
+							chromeMediaSource: 'desktop',
+							maxWidth: window.screen.width,
+							maxHeight: window.screen.height,
+							maxFrameRate: 60
+						},
+						optional: [
+							{googLeakyBucket: true},
+							{googTemporalLayeredScreencast: true}
+						]
+					}
+				};
+
+				constraints.video.mandatory.chromeMediaSourceId = data.sourceId;
+
+				getUserMedia(constraints, function (userStream) {
+					wrStream = userStream;
+					ee.emitEvent('access-accepted', null);
+				}, function (error) {
+					console.error("Access denied", error);
+					ee.emitEvent('access-denied', null);
+				});
+			}
+		});
+	}
+
+	this.initScreenFirefox = function () {
+		var ffver = parseInt(window.navigator.userAgent.match(/Firefox\/(.*)/)[1], 10);
+		if (ffver < 33) {
+			var error = "Firefox version must be >= 33";
+			console.error("Access denied", error);
+			ee.emitEvent('access-denied', null);
+			return;
+		}
+
+		var constraints = {
+			video: {
+				mozMediaSource: 'window',
+				mediaSource: 'window'
+			}
+		};
+
+
+		getUserMedia(constraints, function(stream) {
+			wrStream = stream;
+			ee.emitEvent('access-accepted', null);
+
+			// workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=1045810
+			var lastTime = stream.currentTime;
+			var polly = window.setInterval(function () {
+				if (!stream) window.clearInterval(polly);
+				if (stream.currentTime == lastTime) {
+					window.clearInterval(polly);
+					if (stream.onended) {
+						stream.onended();
+					}
+				}
+				lastTime = stream.currentTime;
+			}, 500);
+		}, function (err) {
+			console.error("Access denied", err);
+			ee.emitEvent('access-denied', null);
+		});
 	}
 
 	this.init = function () {

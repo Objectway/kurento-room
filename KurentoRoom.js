@@ -573,6 +573,7 @@ function Stream(kurento, local, room, options) {
 
 		if (local) {
 			video.muted = true;
+			video.style.zIndex = "100";
 		}
 
 		if (typeof parentElement === "string") {

@@ -415,7 +415,8 @@ function Participant(kurento, local, room, options) {
 				recvVideo: (options.streams[i].recvVideo == undefined ? true : options.streams[i].recvVideo),
 				recvAudio: (options.streams[i].recvAudio == undefined ? true : options.streams[i].recvAudio),
         mediaType: options.streams[i].mediaType,
-				channel: 'data'
+				channel: 'data',
+        ice: options.streams[i].ice
 			}
 			var stream = new Stream(kurento, false, room, streamOpts);
 			addStream(stream);
@@ -665,6 +666,7 @@ function Stream(kurento, local, room, options) {
 		options.audio = opts.audio;
 		options.screen = opts.screen;
     options.mediaType = opts.mediaType;
+    options.ice = opts.ice;
 	};
 	this.getOptions=function(){
 		return options;
@@ -870,6 +872,16 @@ function Stream(kurento, local, room, options) {
 	}
 
 	function initWebRtcPeer(sdpOfferCallback) {
+    var iceServers = [
+      {
+        "url": "stun:stun1.l.google.com:19302"
+      },
+      {
+        "url": that.getOptions().ice.turnUrl,
+        "username": that.getOptions().ice.turnUsername,
+        "credential": that.getOptions().ice.turnPassword
+      }
+    ];
 		if (local) {
 			var options = {
 				videoStream: wrStream,

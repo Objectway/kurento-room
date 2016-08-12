@@ -886,8 +886,11 @@ function Stream(kurento, local, room, options) {
 			var options = {
 				videoStream: wrStream,
 				audioStreams: wrStream,
-				onicecandidate: participant.sendIceCandidate.bind(participant)
-			}
+				onicecandidate: participant.sendIceCandidate.bind(participant),
+        configuration: {
+          iceServers: iceServers
+        }
+			};
 			if (true) { // that.displayMyRemote()) {
 				wp = new kurentoUtils.WebRtcPeer.WebRtcPeerSendrecv(options, function (error) {
 					if(error) {
@@ -914,8 +917,11 @@ function Stream(kurento, local, room, options) {
 				offerConstraints);
 			var options = {
 				onicecandidate: participant.sendIceCandidate.bind(participant),
-				connectionConstraints: offerConstraints
-			}
+				connectionConstraints: offerConstraints,
+        configuration: {
+          iceServers: iceServers
+        }
+			};
 			wp = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
 				if(error) {
 					return console.error(error);

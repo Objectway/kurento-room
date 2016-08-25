@@ -364,7 +364,7 @@ function Room(kurento, options) {
     if (participant === localParticipant) {
       console.log("Unpublishing my media (I'm " + participant.getID() + ")");
       delete localParticipant;
-      kurento.sendRequest('unpublishVideo', { streamId: "default" }, function (error, response) {
+      kurento.sendRequest('unpublishVideo', { streamId: stream.getID() }, function (error, response) {
         if (error) {
           console.error(error);
         } else {
@@ -465,11 +465,11 @@ function Participant(kurento, local, room, options) {
     return id;
   }
 
-  this.sendIceCandidate = function (candidate) {
+  this.sendIceCandidate = function (streamId, candidate) {
     console.debug((local ? "Local" : "Remote"), "candidate for",
       that.getID(), JSON.stringify(candidate));
     kurento.sendRequest("onIceCandidate", {
-      streamId: "default",
+      "streamId": streamId,
       endpointName: that.getID(),
       candidate: candidate.candidate,
       sdpMid: candidate.sdpMid,
@@ -852,7 +852,7 @@ function Stream(kurento, local, room, options) {
     console.log("Sending SDP offer to publish as "
       + that.getGlobalID(), sdpOfferParam);
     kurento.sendRequest("publishVideo", {
-      streamId: "default",
+      streamId: that.getID(),
       sdpOffer: sdpOfferParam,
       doLoopback: that.displayMyRemote() || false,
       mediaType: that.getOptions().mediaType
@@ -876,7 +876,7 @@ function Stream(kurento, local, room, options) {
     console.log("Sending SDP offer to subscribe to "
       + that.getGlobalID(), sdpOfferParam);
     kurento.sendRequest("receiveVideoFrom", {
-      streamId: "default",
+      streamId: that.getID(),
       sender: that.getGlobalID(),
       sdpOffer: sdpOfferParam
     }, function (error, response) {
@@ -903,7 +903,7 @@ function Stream(kurento, local, room, options) {
       var options = {
         videoStream: wrStream,
         audioStreams: wrStream,
-        onicecandidate: participant.sendIceCandidate.bind(participant),
+        onicecandidate: participant.sendIceCandidate.bind(participant, that.getID()),
         //iceTransportPolicy: 'relay',
         configuration: {
           iceServers: iceServers
@@ -934,7 +934,7 @@ function Stream(kurento, local, room, options) {
       console.log("Constraints of generate SDP offer (subscribing)",
         offerConstraints);
       var options = {
-        onicecandidate: participant.sendIceCandidate.bind(participant),
+        onicecandidate: participant.sendIceCandidate.bind(participant, that.getID()),
         connectionConstraints: offerConstraints,
         //iceTransportPolicy: 'relay',
         configuration: {
@@ -1039,7 +1039,9 @@ function Stream(kurento, local, room, options) {
       }
     }
 
-    kurento.sendRequest('unpublishVideo', { streamId: "default" }, function (error, response) {
+    kurento.sendRequest('unpublishVideo', {
+      streamId: that.getID()
+    }, function (error, response) {
       if (error) {
         console.error(error);
       } else {

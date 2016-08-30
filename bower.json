@@ -4,7 +4,7 @@
     "Danilo Arcidiacono <danilo.arcidiacono@objectway.it>"
   ],
   "description": "",
-  "main": "KurentoRoom.js",
+  "main": "dist/KurentoRoom.js",
   "license": "MIT",
   "homepage": "",
   "private": true,

@@ -15,9 +15,9 @@
   "devDependencies": {
     "del": "^2.2.2",
     "gulp": "^3.9.1",
+    "gulp-sequence": "0.4.5",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-typescript": "^2.13.6",
-    "gulp-sequence": "0.4.5"
   },
   "bugs": {
     "url": "https://github.com/Objectway/kurento-room/issues"

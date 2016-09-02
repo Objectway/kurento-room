@@ -1385,12 +1385,13 @@ define("KASServer", ["require", "exports", "KASServerAPI", "KASRoom"], function 
                 console.info("Published ", params);
                 var room = _this.getOnlyRoom();
                 var participant = room.getParticipantById(params.id) || room.addParticipant(params.id);
-                for (var i = 0; i < params.streams.length; i++) {
+                var _loop_1 = function() {
+                    var streamType = params.streams[i].streamType;
                     participant.addRemoteStream(params.streams[i].id, params.streams[i].streamType, _this.iceOptions, function (peer) {
                         if (true) {
                             peer.subscribe(function () {
                                 if (_this.onRemoteStreamSubscribedCallback !== undefined) {
-                                    _this.onRemoteStreamSubscribedCallback(participant, peer);
+                                    _this.onRemoteStreamSubscribedCallback(participant, peer, streamType);
                                 }
                             }, function (error) {
                                 console.error(error);
@@ -1398,6 +1399,9 @@ define("KASServer", ["require", "exports", "KASServerAPI", "KASRoom"], function 
                         }
                     }, function (error) {
                     });
+                };
+                for (var i = 0; i < params.streams.length; i++) {
+                    _loop_1();
                 }
             };
             this.onReceiveICECandidate = function (params) {

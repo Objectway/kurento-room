@@ -73,7 +73,7 @@ export class KASServer {
      * (Optional) callback invoked when subscribing to a new remote stream
      * @type {undefined}
      */
-    private onRemoteStreamSubscribedCallback: (participant: KASParticipant, peer: KASRemoteWebRtcPeer) => any = undefined;
+    private onRemoteStreamSubscribedCallback: (participant: KASParticipant, peer: KASRemoteWebRtcPeer, streamType: string) => any = undefined;
 
     /**
      * (Optional) callback invoked when a remote peer unpublishes his steram
@@ -290,15 +290,16 @@ export class KASServer {
 
         // Add the new remote stream
         for (var i = 0; i < params.streams.length; i++) {
+            const streamType: string = params.streams[i].streamType;
             participant.addRemoteStream(params.streams[i].id,
                                         params.streams[i].streamType,
                                         this.iceOptions,
-                                        (peer:KASRemoteWebRtcPeer) => {
+                                        (peer: KASRemoteWebRtcPeer) => {
                                             if (true) { // subscribeToStreams
                                                 // TODO: For now, there can be only one room/participant per connection
                                                 peer.subscribe(() => {
                                                     if (this.onRemoteStreamSubscribedCallback !== undefined) {
-                                                        this.onRemoteStreamSubscribedCallback(participant, peer);
+                                                        this.onRemoteStreamSubscribedCallback(participant, peer, streamType);
                                                     }
                                                 }, (error: any) => {
                                                     console.error(error);
@@ -383,7 +384,7 @@ export class KASServer {
         this.onMessageReceivedCallback = onMessageReceivedCallback;
     };
 
-    public setOnRemoteStreamSubscribedCallback = (onRemoteStreamSubscribedCallback: (participant: KASParticipant, peer: KASRemoteWebRtcPeer) => any): void => {
+    public setOnRemoteStreamSubscribedCallback = (onRemoteStreamSubscribedCallback: (participant: KASParticipant, peer: KASRemoteWebRtcPeer, streamType: string) => any): void => {
         this.onRemoteStreamSubscribedCallback = onRemoteStreamSubscribedCallback;
     };
 

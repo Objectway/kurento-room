@@ -400,7 +400,7 @@ interface KASServer_Instance {
     onMessageReceivedCallback: (params: INotificationMessageReceived) => any;
     onParticipantLeftCallback: (params: INotificationParticipantLeft) => any;
     onParticipantEvictedCallback: (params: INotificationParticipantEvicted) => any;
-    onRemoteStreamSubscribedCallback: (participant: KASParticipant_Instance, peer: KASRemoteWebRtcPeer_Instance) => any;
+    onRemoteStreamSubscribedCallback: (participant: KASParticipant_Instance, peer: KASRemoteWebRtcPeer_Instance, streamType: string) => any;
     onRemoteStreamUnpublishedCallback: (participant: KASParticipant_Instance, streamId: string, peer: KASRemoteWebRtcPeer_Instance) => any;
     joinRoom: (roomId: string, username: string, thenCallback?: (room: KASRoom_Instance, response: IResponseJoinRoom) => any, catchCallback?: (error: Object) => any) => void;
     leaveRoom: (roomId: string, username: string, thenCallback?: () => any, catchCallback?: (error: Object) => any) => void;
@@ -419,7 +419,7 @@ interface KASServer_Instance {
     setOnParticipantLeftCallback: (onParticipantLeftCallback: (params: INotificationParticipantLeft) => any) => void;
     setOnParticipantEvictedCallback: (onParticipantEvicted: (params: INotificationParticipantEvicted) => any) => void;
     setOnMessageReceivedCallback: (onMessageReceivedCallback: (params: INotificationMessageReceived) => any) => void;
-    setOnRemoteStreamSubscribedCallback: (onRemoteStreamSubscribedCallback: (participant: KASParticipant_Instance, peer: KASRemoteWebRtcPeer_Instance) => any) => void;
+    setOnRemoteStreamSubscribedCallback: (onRemoteStreamSubscribedCallback: (participant: KASParticipant_Instance, peer: KASRemoteWebRtcPeer_Instance, streamType: string) => any) => void;
     setOnRemoteStreamUnpublishedCallback: (onRemoteStreamUnpublishedCallback: (participant: KASParticipant_Instance, streamId: string, peer: KASRemoteWebRtcPeer_Instance) => any) => void;
     getOnlyRoom: () => KASRoom_Instance;
     getOnlyParticipantId: () => string;

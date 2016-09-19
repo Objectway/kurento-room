@@ -730,6 +730,6 @@ interface KurentoRoomModule_Static {
 
 declare var KurentoRoom: KurentoRoomModule_Static;
 
-declare module 'kurentoRoom' {
+declare module 'kurento-room' {
     export = KurentoRoom;
 }

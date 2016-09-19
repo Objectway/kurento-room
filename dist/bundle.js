@@ -1492,7 +1492,7 @@ define("KASServer", ["require", "exports", "KASServerAPI", "KASRoom"], function 
     }());
     exports.KASServer = KASServer;
 });
-define("KurentoRoom", ["require", "exports", "KASConnection", "KASLocalStream", "KASLocalWebRtcPeer", "KASParticipant", "KASRemoteWebRtcPeer", "KASRoom", "KASServer", "KASServerAPI", "KASStream"], function (require, exports, KASConnection, KASLocalStream, KASLocalWebRtcPeer, KASParticipant, KASRemoteWebRtcPeer, KASRoom, KASServer, KASServerAPI, KASStream) {
+define(["require", "exports", "KASConnection", "KASLocalStream", "KASLocalWebRtcPeer", "KASParticipant", "KASRemoteWebRtcPeer", "KASRoom", "KASServer", "KASServerAPI", "KASStream"], function (require, exports, KASConnection, KASLocalStream, KASLocalWebRtcPeer, KASParticipant, KASRemoteWebRtcPeer, KASRoom, KASServer, KASServerAPI, KASStream) {
     "use strict";
     var KurentoRoom = (function () {
         function KurentoRoom() {

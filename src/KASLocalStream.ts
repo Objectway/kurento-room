@@ -236,8 +236,8 @@ export class KASLocalStream extends KASStream {
         this.userMediaConstraints = {
             audio: true,
             video: {
-                mozMediaSource: 'window',
-                mediaSource: 'window'
+                mozMediaSource: 'screen',
+                mediaSource: 'screen'
             }
         };
 

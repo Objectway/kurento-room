@@ -438,8 +438,8 @@ define("KASLocalStream", ["require", "exports", "KASStream"], function (require,
                 _this.userMediaConstraints = {
                     audio: true,
                     video: {
-                        mozMediaSource: 'window',
-                        mediaSource: 'window'
+                        mozMediaSource: 'screen',
+                        mediaSource: 'screen'
                     }
                 };
                 if (streamConstraints.idealVideoWidth !== undefined) {

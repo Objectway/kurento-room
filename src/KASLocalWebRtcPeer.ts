@@ -126,9 +126,9 @@ export class KASLocalWebRtcPeer implements IKASWebRtcPeer {
             videoStream: this.stream.getStreamObject(),
             audioStreams: this.stream.getStreamObject(),
             onicecandidate: this.onIceCandidate,
-            iceTransportPolicy: this.iceOptions.forceTurn === true ? 'relay' : 'all',
             configuration: {
-                iceServers: iceServers
+                iceServers: iceServers,
+                iceTransportPolicy: this.iceOptions.forceTurn === true ? 'relay' : 'all'
             }
         };
 
@@ -243,11 +243,11 @@ export class KASLocalWebRtcPeer implements IKASWebRtcPeer {
                 this.remoteLoopbackStream.setStreamType(this.stream.getStreamType());
                 this.remoteLoopbackStream.setStreamObject(remoteStream);
 
+                // Change state
+                this.state = KASLocalWebRtcPeerConstants.STATES.PUBLISHED;
+
                 if (thenCallback !== undefined) {
                     thenCallback();
-
-                    // Change state
-                    this.state = KASLocalWebRtcPeerConstants.STATES.PUBLISHED;
                 }
             }, (error: any) => {
                 console.error(this.stream.getId() + ": Error setting SDP to the peer connection: " + JSON.stringify(error));

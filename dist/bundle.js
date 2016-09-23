@@ -302,6 +302,21 @@ define("KASLocalStream", ["require", "exports", "KASStream"], function (require,
             var _this = this;
             _super.call(this, id);
             this.userMediaConstraints = undefined;
+            this.chromeAudioOnlyLocalStream = undefined;
+            this.dispose = function () {
+                if (_this.userMediaStream !== undefined) {
+                    _this.userMediaStream.getAudioTracks().forEach(function (track) {
+                        track.stop && track.stop();
+                    });
+                    _this.userMediaStream.getVideoTracks().forEach(function (track) {
+                        track.stop && track.stop();
+                    });
+                }
+                if (_this.chromeAudioOnlyLocalStream !== undefined) {
+                    _this.chromeAudioOnlyLocalStream.dispose();
+                    _this.chromeAudioOnlyLocalStream = undefined;
+                }
+            };
             this.requestUserMediaStream = function (streamConstraints, thenCallback, catchCallback) {
                 if (_this.streamType === KASStream_1.KASStreamConstants.STREAM_TYPE.AUDIO ||
                     _this.streamType === KASStream_1.KASStreamConstants.STREAM_TYPE.VIDEO) {
@@ -413,9 +428,19 @@ define("KASLocalStream", ["require", "exports", "KASStream"], function (require,
                         }
                         getUserMedia(_this.userMediaConstraints, function (userStream) {
                             _this.userMediaStream = userStream;
-                            if (thenCallback !== undefined) {
-                                thenCallback();
-                            }
+                            _this.chromeAudioOnlyLocalStream = new KASLocalStream(_this.getId() + "-internal-audio-only");
+                            _this.chromeAudioOnlyLocalStream.setStreamType(KASStream_1.KASStreamConstants.STREAM_TYPE.AUDIO);
+                            _this.chromeAudioOnlyLocalStream.requestUserMediaStream(streamConstraints, function () {
+                                _this.userMediaStream.addTrack(_this.chromeAudioOnlyLocalStream.getStreamObject().getAudioTracks()[0]);
+                                if (thenCallback !== undefined) {
+                                    thenCallback();
+                                }
+                            }, function (error) {
+                                console.error("Access denied", error);
+                                if (catchCallback !== undefined) {
+                                    catchCallback(error);
+                                }
+                            });
                         }, function (error) {
                             console.error("Access denied", error);
                             if (catchCallback !== undefined) {
@@ -747,9 +772,9 @@ define("KASRemoteWebRtcPeer", ["require", "exports", "KASStream"], function (req
                     pc.setRemoteDescription(answer, function () {
                         var remoteStream = pc.getRemoteStreams()[0];
                         _this.stream.setStreamObject(remoteStream);
+                        _this.state = KASRemoteWebRtcPeerConstants.STATES.SUBSCRIBED;
                         if (thenCallback !== undefined) {
                             thenCallback();
-                            _this.state = KASRemoteWebRtcPeerConstants.STATES.SUBSCRIBED;
                         }
                     }, function (error) {
                         console.error(_this.stream.getId() + ": Error setting SDP to the peer connection: " + JSON.stringify(error));
@@ -1110,9 +1135,9 @@ define("KASLocalWebRtcPeer", ["require", "exports", "KASStream"], function (requ
                         _this.remoteLoopbackStream = new KASStream_4.KASStream(_this.stream.getId() + "-remote");
                         _this.remoteLoopbackStream.setStreamType(_this.stream.getStreamType());
                         _this.remoteLoopbackStream.setStreamObject(remoteStream);
+                        _this.state = KASLocalWebRtcPeerConstants.STATES.PUBLISHED;
                         if (thenCallback !== undefined) {
                             thenCallback();
-                            _this.state = KASLocalWebRtcPeerConstants.STATES.PUBLISHED;
                         }
                     }, function (error) {
                         console.error(_this.stream.getId() + ": Error setting SDP to the peer connection: " + JSON.stringify(error));

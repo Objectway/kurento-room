@@ -33,9 +33,39 @@ export class KASLocalStream extends KASStream {
      */
     private userMediaConstraints: any = undefined;
 
+    /**
+     * Local stream for audio only.
+     * This is used only in Chrome, because it doesn't allow to request both screen and audio within one getUserMedia call.
+     * The audio track from this stream will augment the true stream contained in the superclass KASStream.
+     * This object is not accessible outside this class.
+     *
+     * @type {undefined}
+     */
+    private chromeAudioOnlyLocalStream: KASLocalStream = undefined;
+
     public constructor(id: string) {
         super(id);
     }
+
+    public dispose = (): void => {
+        // Can't call a super method when using fat arrows, so we duplicate the code
+        // (typescript is a joke, and a bad one)
+        //super.dispose();
+        if (this.userMediaStream !== undefined) {
+            this.userMediaStream.getAudioTracks().forEach(function (track) {
+                track.stop && track.stop()
+            });
+            this.userMediaStream.getVideoTracks().forEach(function (track) {
+                track.stop && track.stop()
+            });
+        }
+
+        // Also dispose the hidden chrome stream if it has been created
+        if (this.chromeAudioOnlyLocalStream !== undefined) {
+            this.chromeAudioOnlyLocalStream.dispose();
+            this.chromeAudioOnlyLocalStream = undefined;
+        }
+    };
 
     /**
      * Initializes the userMediaStream object with getUserMedia(), calling the appropriate callbacks.
@@ -201,9 +231,27 @@ export class KASLocalStream extends KASStream {
                 getUserMedia(this.userMediaConstraints, (userStream: any) => {
                     this.userMediaStream = userStream;
 
-                    if (thenCallback !== undefined) {
-                        thenCallback();
-                    }
+                    // Now request the audio only stream
+                    this.chromeAudioOnlyLocalStream = new KASLocalStream(this.getId() + "-internal-audio-only");
+                    this.chromeAudioOnlyLocalStream.setStreamType(KASStreamConstants.STREAM_TYPE.AUDIO);
+
+                    // Request the audio
+                    this.chromeAudioOnlyLocalStream.requestUserMediaStream(streamConstraints, () => {
+
+                        // Add the audio track from this new local stream to the original stream
+                        this.userMediaStream.addTrack(this.chromeAudioOnlyLocalStream.getStreamObject().getAudioTracks()[0]);
+
+                        // Success!
+                        if (thenCallback !== undefined) {
+                            thenCallback();
+                        }
+                    }, (error: any) => {
+                        console.error("Access denied", error);
+
+                        if (catchCallback !== undefined) {
+                            catchCallback(error);
+                        }
+                    });
                 }, (error: any) => {
                     console.error("Access denied", error);
 

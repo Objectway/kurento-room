@@ -4,7 +4,7 @@
     "Danilo Arcidiacono <danilo.arcidiacono@objectway.it>"
   ],
   "description": "",
-  "main": "KurentoRoom.js",
+  "main": "dist/bundle.js",
   "license": "MIT",
   "homepage": "",
   "private": true,
@@ -12,6 +12,9 @@
     "**/.*",
     "node_modules",
     "bower_components",
+    "src",
+    "*.json",
+    "gulpfile*.js",
     "test",
     "tests"
   ],

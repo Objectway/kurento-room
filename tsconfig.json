@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "module": "amd",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "outDir": "./dist",
+        "outFile":"./dist/bundle.js",
+        "sourceMap": false,
+        "declaration": true
+    }
+}

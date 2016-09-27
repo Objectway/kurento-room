@@ -1,0 +1,26 @@
+{
+  "name": "kurento-room",
+  "version": "1.0.0",
+  "description": "KurentoRoom in Typescript.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Objectway/kurento-room.git"
+  },
+  "author": "Objectway",
+  "license": "MIT",
+  "devDependencies": {
+    "del": "^2.2.2",
+    "gulp": "^3.9.1",
+    "gulp-sequence": "0.4.5",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-typescript": "^2.13.6",
+  },
+  "bugs": {
+    "url": "https://github.com/Objectway/kurento-room/issues"
+  },
+  "homepage": "https://github.com/Objectway/kurento-room#readme"
+}

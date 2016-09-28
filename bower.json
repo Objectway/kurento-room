@@ -22,7 +22,7 @@
     "kurento-jsonrpc": "^5.1.3",
     "kurento-utils": "^6.6.0",
     "eventEmitter": "4.3.0",
-    "webrtc-adapter": "^1.x"
+    "adapterjs": "^0.x"
   },
   "version": "2.0.5"
 }

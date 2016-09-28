@@ -1,3 +1,5 @@
+import RpcBuilder = require('kurento-jsonrpc');
+
 export class KASConnectionConstants {
     public static get CONNECTION_STATES(): any {
         return {

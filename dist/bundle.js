@@ -3,7 +3,7 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-define("KASConnection", ["require", "exports"], function (require, exports) {
+define("KASConnection", ["require", "exports", 'kurento-jsonrpc'], function (require, exports, RpcBuilder) {
     "use strict";
     var KASConnectionConstants = (function () {
         function KASConnectionConstants() {
@@ -645,7 +645,7 @@ define("KASServerAPI", ["require", "exports"], function (require, exports) {
     }());
     exports.KASServerAPI = KASServerAPI;
 });
-define("KASRemoteWebRtcPeer", ["require", "exports", "KASStream"], function (require, exports, KASStream_2) {
+define("KASRemoteWebRtcPeer", ["require", "exports", 'kurento-utils', "KASStream"], function (require, exports, kurentoUtils, KASStream_2) {
     "use strict";
     var KASRemoteWebRtcPeerConstants = (function () {
         function KASRemoteWebRtcPeerConstants() {
@@ -705,9 +705,9 @@ define("KASRemoteWebRtcPeer", ["require", "exports", "KASStream"], function (req
                 var options = {
                     onicecandidate: _this.onIceCandidate,
                     connectionConstraints: offerConstraints,
-                    iceTransportPolicy: _this.iceOptions.forceTurn === true ? 'relay' : 'all',
                     configuration: {
-                        iceServers: iceServers
+                        iceServers: iceServers,
+                        iceTransportPolicy: _this.iceOptions.forceTurn === true ? 'relay' : 'all'
                     }
                 };
                 _this.webRtcPeer = new kurentoUtils.WebRtcPeer.WebRtcPeerRecvonly(options, function (error) {
@@ -1004,7 +1004,7 @@ define("KASParticipant", ["require", "exports", "KASLocalWebRtcPeer", "KASLocalS
 define("KASWebRtcPeer", ["require", "exports"], function (require, exports) {
     "use strict";
 });
-define("KASLocalWebRtcPeer", ["require", "exports", "KASStream"], function (require, exports, KASStream_4) {
+define("KASLocalWebRtcPeer", ["require", "exports", 'kurento-utils', "KASStream"], function (require, exports, kurentoUtils, KASStream_4) {
     "use strict";
     var KASLocalWebRtcPeerConstants = (function () {
         function KASLocalWebRtcPeerConstants() {
@@ -1056,9 +1056,9 @@ define("KASLocalWebRtcPeer", ["require", "exports", "KASStream"], function (requ
                     videoStream: _this.stream.getStreamObject(),
                     audioStreams: _this.stream.getStreamObject(),
                     onicecandidate: _this.onIceCandidate,
-                    iceTransportPolicy: _this.iceOptions.forceTurn === true ? 'relay' : 'all',
                     configuration: {
-                        iceServers: iceServers
+                        iceServers: iceServers,
+                        iceTransportPolicy: _this.iceOptions.forceTurn === true ? 'relay' : 'all'
                     }
                 };
                 if (true) {

@@ -1,3 +1,5 @@
+import kurentoUtils = require('kurento-utils');
+
 import {KASStream, KASStreamConstants} from "./KASStream";
 import {KASServerAPI, IRequestReceiveVideo, IResponseReceiveVideo} from "./KASServerAPI";
 import {IICEOptions, IKASWebRtcPeer} from "./KASWebRtcPeer";

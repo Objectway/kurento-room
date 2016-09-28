@@ -24,5 +24,5 @@
     "eventEmitter": "4.3.0",
     "webrtc-adapter": "^1.x"
   },
-  "version": "2.0.4"
+  "version": "2.0.5"
 }

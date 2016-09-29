@@ -182,7 +182,7 @@ interface KASConnection_Instance {
 }
 
 declare class KASConnectionConstants_Static {
-    get CONNECTION_STATES(): any;
+    CONNECTION_STATES: () => any;
 }
 
 interface IStreamConstraints {
@@ -268,7 +268,7 @@ interface IKASWebRtcPeer {
 }
 
 declare class KASLocalWebRtcPeerConstants_Static {
-    get STATES(): any;
+    STATES: () => any;
 }
 
 interface KASLocalWebRtcPeer_Static {
@@ -332,7 +332,7 @@ interface KASParticipant_Instance {
 }
 
 declare class KASRemoteWebRtcPeerConstants_Static {
-    get STATES(): any;
+    STATES: () => any;
 }
 
 interface KASRemoteWebRtcPeer_Static {
@@ -683,7 +683,7 @@ interface KASServerAPI_Instance {
 }
 
 declare class KASStreamConstants_Static {
-    get STREAM_TYPE(): any;
+    STREAM_TYPE: () => any;
 }
 
 interface KASStream_Static {
